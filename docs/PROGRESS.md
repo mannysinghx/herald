@@ -3,8 +3,8 @@
 ## Where it stopped
 
 - Branch `main`, published at https://github.com/mannysinghx/herald (public, Apache-2.0). The last commit is whatever `git log -1` shows.
-- **Deployed** to Railway: https://herald-production-ec87.up.railway.app
-- **A push to `main` does NOT deploy yet.** The service's source is set to the repo, but it has no deploy trigger: creating one fails with "no one in the project has access to it", because Railway's GitHub app has not been given this repo. The live service runs `737255f`; `35c5bf6` only changed `.dockerignore` and is not deployed.
+- **Deployed** to Railway, with deploy trigger `595837e1` on `mannysinghx/herald@main`: https://herald-production-ec87.up.railway.app
+- **A push to `main` deploys** when it changes a watched path: `main.go`, `internal/**`, `go.mod`, `go.sum`, `Dockerfile` or `.dockerignore`. Run `scripts/ci-local.sh` before every push; GitHub runs no CI here. Proved by `769c440`, which started deploying one second after the push.
 - Railway project `Herald` (`a6441bb1-8adb-42ba-acb3-85555bc93dfb`), environment `production`, service `herald` (`8627fcb8-a225-4ccf-80b6-ba310c639b78`), volume `herald-data` at `/data`.
 - Variables: `PORT=8080`, `RAILWAY_RUN_UID=0` (Railway volumes are root-owned), `HERALD_BASE_URL`, `HERALD_ATTACHMENT_DIR=/data/attachments`, `HERALD_BEHIND_PROXY=true`, `HERALD_PROXY_HEADER=X-Real-IP`, `HERALD_VERBOSE=false`. Access is deny by default.
 - **The live server has no tokens**, so nothing can publish or subscribe until the owner creates one (command below).
@@ -40,7 +40,6 @@ Nothing.
 | iOS instant delivery needs either the ntfy.sh upstream (it sees message IDs, topic hashes, timing) or our own app with an Apple Developer account | Decision | Owner |
 | Scope for push: official apps only, or our own Firebase and apps | Decision | Owner |
 | Railway may cap how long one HTTP stream stays open; not measured here. Clients reconnect with `since=`, so a cap should cost a reconnect rather than messages, but this is unverified on Railway. | Low | Measure if streams drop |
-| Auto-deploy: the owner must add `mannysinghx/herald` to Railway's GitHub app (https://github.com/settings/installations). Then create the trigger and prove it with a push to a watched path: the watch patterns are `main.go`, `internal/**`, `go.mod`, `go.sum`, `Dockerfile`, `.dockerignore`. | High, blocks auto-deploy | Owner |
 | Deployment `de7d0b07` built `737255f`, a docs-only commit, at 20:03 UTC with no trigger registered. Cause unknown; it may have been started from the dashboard. | Low | Recheck after the trigger exists |
 | Project name: created as `Herald`, assuming that is what "same name" meant, not the folder name `NotificationNTFY`. Renaming is free; the generated URL would not change. | Low | Owner |
 | Rate limit counters are in memory and reset on restart (`internal/server/limits.go`) | Low | Accepted for now |
@@ -63,7 +62,7 @@ Create a token on the live server. The secret is printed once, in your terminal 
 railway ssh --project a6441bb1-8adb-42ba-acb3-85555bc93dfb --environment production --service herald -- herald token add -db /data/herald.db -name owner -allow '*:rw'
 ```
 
-Until auto-deploy works, deploy the working tree directly, after running local CI:
+To deploy, run local CI and push to `main`. To deploy the working tree directly instead:
 
 ```bash
 railway up --project a6441bb1-8adb-42ba-acb3-85555bc93dfb --environment production --service herald --detach -m "Deploy"
