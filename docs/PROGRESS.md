@@ -3,7 +3,9 @@
 ## Where it stopped
 
 - Branch `main`, published at https://github.com/mannysinghx/herald (public, Apache-2.0). The last commit is whatever `git log -1` shows.
-- **Deployed** to Railway, with deploy trigger `595837e1` on `mannysinghx/herald@main`: https://herald-production-ec87.up.railway.app
+- **Deployed** to Railway, with deploy trigger `30f4e99a` on `mannysinghx/herald@main`: https://herald-production-ec87.up.railway.app. Live deployment `048bced6` runs `13484c4`.
+- Trigger `30f4e99a` replaced `595837e1`, the one the push test below used, at about 20:26 UTC on 2026-11-05. No command in this project's session made the change, so it probably came from the dashboard (unverified). No push has gone through the new trigger yet.
+- Railway's "Could not load branches" error cleared on 2026-11-05 with no settings changed. Railway's `githubRepos` left out herald for over 90 minutes after its GitHub app was granted access, and `githubRepoBranches` answered "GitHub Repo not found". Both then recovered between two checks about a minute apart at about 22:07 UTC. Why it recovered is unknown. If it returns, compare `githubRepos` with `github.com/settings/installations/99809183`, and wait before disconnecting anything.
 - **A push to `main` deploys** when it changes a watched path: `main.go`, `internal/**`, `go.mod`, `go.sum`, `Dockerfile` or `.dockerignore`. Run `scripts/ci-local.sh` before every push; GitHub runs no CI here. Proved by `769c440`, which started deploying one second after the push, and `1f171e6`, a docs-only commit Railway marked SKIPPED. The live service runs `769c440`.
 - Railway project `Herald` (`a6441bb1-8adb-42ba-acb3-85555bc93dfb`), environment `production`, service `herald` (`8627fcb8-a225-4ccf-80b6-ba310c639b78`), volume `herald-data` at `/data`.
 - Variables: `PORT=8080`, `RAILWAY_RUN_UID=0` (Railway volumes are root-owned), `HERALD_BASE_URL`, `HERALD_ATTACHMENT_DIR=/data/attachments`, `HERALD_BEHIND_PROXY=true`, `HERALD_PROXY_HEADER=X-Real-IP`, `HERALD_VERBOSE=false`. Access is deny by default.
