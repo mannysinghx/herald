@@ -32,6 +32,7 @@ type Config struct {
 	KeepaliveInterval time.Duration
 	DefaultAccess     store.Permission
 	BehindProxy       bool
+	ProxyHeader       string // Header holding the client address when BehindProxy is set
 	UpstreamBaseURL   string // Forwards poll requests here, which is how iOS gets woken up
 	UpstreamToken     string
 
@@ -68,6 +69,7 @@ func DefaultConfig() *Config {
 		CacheDuration:          12 * time.Hour,
 		KeepaliveInterval:      45 * time.Second,
 		DefaultAccess:          store.PermDeny,
+		ProxyHeader:            "X-Forwarded-For",
 		MessageSizeLimit:       4096,
 		MessagePollSizeLimit:   10 * 1024 * 1024,
 		TitleSizeLimit:         1024,
@@ -287,7 +289,10 @@ func (s *Server) route(w http.ResponseWriter, r *http.Request, q *request) *apiE
 // authenticate reads the credential if there is one. A wrong credential is an error rather than
 // a silent downgrade to anonymous, so a typo in a token cannot pass as "no access".
 func (s *Server) authenticate(r *http.Request) (*request, *apiError) {
-	ip := clientIP(r, s.cfg.BehindProxy)
+	ip := clientIP(r, s.cfg.BehindProxy, s.cfg.ProxyHeader)
+	if s.cfg.BehindProxy {
+		slog.Debug("client address", "ip", ip.String(), "remote", r.RemoteAddr, "x_forwarded_for", r.Header.Get("X-Forwarded-For"), "x_real_ip", r.Header.Get("X-Real-IP"))
+	}
 	ipVisitor := s.visitors.get(ipKey(ip))
 	q := &request{exempt: s.visitors.isExempt(ip), visitor: ipVisitor}
 	secret, e := readCredential(r)

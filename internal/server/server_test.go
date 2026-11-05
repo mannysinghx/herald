@@ -536,19 +536,48 @@ func TestForwardedForTakesTheEntryOurProxyAdded(t *testing.T) {
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	r.RemoteAddr = "10.0.0.1:1234"
 	r.Header.Set("X-Forwarded-For", "1.2.3.4, 5.6.7.8")
-	if got := clientIP(r, true).String(); got != "5.6.7.8" {
+	const xff = "X-Forwarded-For"
+	if got := clientIP(r, true, xff).String(); got != "5.6.7.8" {
 		t.Errorf("behind proxy: %s", got)
 	}
-	if got := clientIP(r, false).String(); got != "10.0.0.1" {
+	if got := clientIP(r, false, xff).String(); got != "10.0.0.1" {
 		t.Errorf("not behind proxy, header must be ignored: %s", got)
 	}
-	r.Header.Set("X-Forwarded-For", "garbage")
-	if got := clientIP(r, true).String(); got != "10.0.0.1" {
+	r.Header.Set("X-Real-IP", "9.9.9.9")
+	if got := clientIP(r, true, "X-Real-IP").String(); got != "9.9.9.9" {
+		t.Errorf("configured header: %s", got)
+	}
+	r.Header.Set(xff, "garbage")
+	if got := clientIP(r, true, xff).String(); got != "10.0.0.1" {
 		t.Errorf("garbage header: %s", got)
 	}
 	six := netip.MustParseAddr("2001:db8:1:2:3:4:5:6")
 	if ipKey(six) != ipKey(netip.MustParseAddr("2001:db8:1:2:ffff::1")) {
 		t.Error("addresses in one /64 should share a visitor")
+	}
+}
+
+// Requests through one proxy that names different clients must not share a rate limit, and the
+// same client must keep one, whatever else it sends.
+func TestRateLimitFollowsConfiguredProxyHeader(t *testing.T) {
+	_, base := start(t, func(c *Config) {
+		c.RateLimitExempt = nil
+		c.RequestBurst = 2
+		c.RequestReplenish = time.Hour
+		c.BehindProxy = true
+		c.ProxyHeader = "X-Real-IP"
+	})
+	send := func(realIP, forwarded string) int {
+		_, code := publish(t, base, "p", "x", "X-Real-IP", realIP, "X-Forwarded-For", forwarded)
+		return code
+	}
+	send("1.1.1.1", "7.7.7.1")
+	send("1.1.1.1", "7.7.7.2")
+	if code := send("1.1.1.1", "7.7.7.3"); code != 429 {
+		t.Fatalf("a changing X-Forwarded-For should not escape the limit: %d", code)
+	}
+	if code := send("2.2.2.2", "7.7.7.3"); code != 200 {
+		t.Fatalf("another client should have its own limit: %d", code)
 	}
 }
 

@@ -146,11 +146,13 @@ func (t *visitors) prune(now time.Time) {
 	}
 }
 
-// clientIP returns the address to rate limit by. Behind a proxy it takes the right-most entry of
-// X-Forwarded-For, the one our proxy added: everything to its left is whatever the client sent.
-func clientIP(r *http.Request, behindProxy bool) netip.Addr {
+// clientIP returns the address to rate limit by. Behind a proxy it reads the configured header and
+// takes the right-most entry, the one the proxy added: everything to its left is whatever the
+// client sent. Which header is right depends on the proxy. On Railway the right-most
+// X-Forwarded-For entry is not the client, and X-Real-IP is.
+func clientIP(r *http.Request, behindProxy bool, header string) netip.Addr {
 	if behindProxy {
-		parts := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
+		parts := strings.Split(r.Header.Get(header), ",")
 		for i := len(parts) - 1; i >= 0; i-- {
 			if a, err := netip.ParseAddr(strings.TrimSpace(parts[i])); err == nil {
 				return a.Unmap()

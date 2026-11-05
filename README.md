@@ -72,7 +72,9 @@ Each flag also has an environment variable, such as `HERALD_BASE_URL`. `PORT` se
 | `-db` | `herald.db` | SQLite file |
 | `-attachment-dir` | off | Attachment directory; needs `-base-url` |
 | `-default-access` | `deny` | Access with no matching token rule: `deny`, `ro`, `wo`, `rw` |
-| `-behind-proxy` | off | Rate limit by `X-Forwarded-For`. Only set this behind a proxy that writes it, or clients can pick their own limit bucket. |
+| `-behind-proxy` | off | Rate limit by the address in `-proxy-header`. Only set this behind a proxy that writes that header, or clients can pick their own limit bucket. |
+| `-proxy-header` | `X-Forwarded-For` | Header holding the client address. Use `X-Real-IP` on Railway. |
+| `-verbose` | off | Debug logging, including the client address headers of each request |
 | `-cache-duration` | `12h` | How long messages stay available for replay |
 | `-keepalive` | `45s` | Keepalive interval, and how quickly a revoked token loses its open streams |
 | `-upstream-base-url`, `-upstream-token` | off | Forward poll requests, to wake iOS devices |

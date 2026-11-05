@@ -59,13 +59,14 @@ func serve(args []string) error {
 	fs.StringVar(&cfg.DBPath, "db", env("HERALD_DB", cfg.DBPath), "SQLite database file")
 	fs.StringVar(&cfg.AttachmentDir, "attachment-dir", env("HERALD_ATTACHMENT_DIR", ""), "directory for attachments; empty disables them")
 	access := fs.String("default-access", env("HERALD_DEFAULT_ACCESS", "deny"), "access without a matching token rule: deny, ro, wo or rw")
-	fs.BoolVar(&cfg.BehindProxy, "behind-proxy", env("HERALD_BEHIND_PROXY", "") == "true", "rate limit by X-Forwarded-For; only set this behind a proxy that writes it")
+	fs.BoolVar(&cfg.BehindProxy, "behind-proxy", env("HERALD_BEHIND_PROXY", "") == "true", "rate limit by the address in -proxy-header; only set this behind a proxy that writes it")
+	fs.StringVar(&cfg.ProxyHeader, "proxy-header", env("HERALD_PROXY_HEADER", cfg.ProxyHeader), "header holding the client address when behind a proxy; X-Real-IP on Railway")
 	fs.StringVar(&cfg.UpstreamBaseURL, "upstream-base-url", env("HERALD_UPSTREAM_BASE_URL", ""), "server to forward poll requests to, to wake iOS devices")
 	fs.StringVar(&cfg.UpstreamToken, "upstream-token", env("HERALD_UPSTREAM_TOKEN", ""), "access token for the upstream server")
 	exempt := fs.String("rate-limit-exempt", env("HERALD_RATE_LIMIT_EXEMPT", ""), "comma-separated CIDRs without rate limits")
 	cacheDuration := fs.Duration("cache-duration", envDuration("HERALD_CACHE_DURATION", cfg.CacheDuration), "how long messages stay available for replay")
 	keepalive := fs.Duration("keepalive", envDuration("HERALD_KEEPALIVE", cfg.KeepaliveInterval), "interval between keepalives on idle streams")
-	verbose := fs.Bool("verbose", false, "log at debug level")
+	verbose := fs.Bool("verbose", env("HERALD_VERBOSE", "") == "true", "log at debug level")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
