@@ -2,7 +2,11 @@
 
 ## Where it stopped
 
-- Branch `main`, local only: no remote, nothing pushed, nothing deployed. The last commit is whatever `git log -1` shows.
+- Branch `main`, no git remote, nothing pushed to GitHub. The last commit is whatever `git log -1` shows.
+- **Deployed** to Railway from `70ab1ac` with `railway up`, deployment `ffc171c0`: https://herald-production-ec87.up.railway.app
+- Railway project `Herald` (`a6441bb1-8adb-42ba-acb3-85555bc93dfb`), environment `production`, service `herald` (`8627fcb8-a225-4ccf-80b6-ba310c639b78`), volume `herald-data` at `/data`.
+- Variables: `PORT=8080`, `RAILWAY_RUN_UID=0` (Railway volumes are root-owned), `HERALD_BASE_URL`, `HERALD_ATTACHMENT_DIR=/data/attachments`, `HERALD_BEHIND_PROXY=true`, `HERALD_PROXY_HEADER=X-Real-IP`, `HERALD_VERBOSE=false`. Access is deny by default.
+- **The live server has no tokens**, so nothing can publish or subscribe until the owner creates one (command below).
 - Nothing uncommitted is expected.
 
 ## Done and verified
@@ -18,6 +22,9 @@
 | Local CI (`scripts/ci-local.sh`, Linux container, clean checkout of `4276628`) | gofmt, vet, race tests, static build, govulncheck, conformance | Pass; no known vulnerabilities |
 | Docker image (`docker build`, 32.7 MB) | Ran it as non-root with a volume: publish, token add, restart | Message survived the restart |
 
+| Live on Railway | Through the public URL, 2026-11-05 | Token publish and poll, wrong token 401, other topic 403, anonymous 403; JSON and SSE arrive in about 200 ms, unbuffered; WebSocket; attachment round trip; scheduled send; messages and tokens survive a redeploy |
+| Live rate limit | 75 requests from one client | 62 allowed, 13 limited; spoofed `X-Forwarded-For` or `X-Real-IP` did not escape it; a client on another IP was unaffected |
+| Page errors | Browser against a locked local copy, 14 cases | Bad topics, missing and wrong tokens, and tokens without permission all get a specific message; valid topic goes live and shows sent messages. Not re-run in a browser on the live URL; there the new page was confirmed served and the same responses checked with curl. |
 
 ## In flight
 
@@ -30,7 +37,9 @@ Nothing.
 | Official Android and iOS apps have not been run against Herald. Every URL they call is implemented, but delivery on a real phone is unverified. | High, this is the product's main use | Needs a device; owner |
 | iOS instant delivery needs either the ntfy.sh upstream (it sees message IDs, topic hashes, timing) or our own app with an Apple Developer account | Decision | Owner |
 | Scope for push: official apps only, or our own Firebase and apps | Decision | Owner |
-| Where to deploy. Railway is available. It needs a persistent volume for `/data`, plus `-behind-proxy` once the proxy's `X-Forwarded-For` behavior is confirmed (`internal/server/limits.go`, `clientIP`) | Decision | Owner |
+| Railway may cap how long one HTTP stream stays open; not measured here. Clients reconnect with `since=`, so a cap should cost a reconnect rather than messages, but this is unverified on Railway. | Low | Measure if streams drop |
+| Deploys are manual (`railway up`), because the repo has no GitHub remote | Decision | Owner |
+| Project name: created as `Herald`, assuming that is what "same name" meant, not the folder name `NotificationNTFY`. Renaming is free; the generated URL would not change. | Low | Owner |
 | Name ("Herald" is a placeholder) and license (none yet) | Low | Owner |
 | Rate limit counters are in memory and reset on restart (`internal/server/limits.go`) | Low | Accepted for now |
 | The app's browser pane launcher could not start Herald from this volume; a shell process could. Not diagnosed. | Low, tooling only | Nobody needs to act |
@@ -39,12 +48,24 @@ Nothing.
 
 Nothing below has been requested yet, so none of it should start without the owner asking.
 
-1. Test on a real phone: deploy somewhere reachable, point the official Android app at it, send a message with the app in the background.
-2. Decide the iOS route, then test it the same way.
-3. Deploy with a persistent volume, and create real tokens.
+1. Owner creates a token (see below).
+2. Test on a real phone: point the official Android app at the live URL, send a message with the app in the background.
+3. Decide the iOS route, then test it the same way.
 4. Then, as needed: Web Push (so browsers alert with the tab closed), email, metrics.
 
 ## How to resume
+
+Create a token on the live server. The secret is printed once, in your terminal only:
+
+```bash
+railway ssh --project a6441bb1-8adb-42ba-acb3-85555bc93dfb --environment production --service herald -- herald token add -db /data/herald.db -name owner -allow '*:rw'
+```
+
+Deploy the current directory (run local CI first):
+
+```bash
+railway up --project a6441bb1-8adb-42ba-acb3-85555bc93dfb --environment production --service herald --detach -m "Deploy"
+```
 
 ```bash
 git log --oneline

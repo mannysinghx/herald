@@ -87,6 +87,12 @@ rule matching a topic applies, so put specific rules before broad ones. Topics n
 With a host that restarts containers, keep the database on a persistent volume, or replay history and tokens are
 lost. The Docker image stores it in `/data`.
 
+## Deploy to Railway
+
+Live at https://herald-production-ec87.up.railway.app. See [docs/PROGRESS.md](docs/PROGRESS.md) for the IDs, variables
+and commands. A new deployment needs a volume at `/data`, `RAILWAY_RUN_UID=0`, `HERALD_BEHIND_PROXY=true` and
+`HERALD_PROXY_HEADER=X-Real-IP`.
+
 ## Test it
 
 ```bash

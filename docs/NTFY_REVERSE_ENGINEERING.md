@@ -167,6 +167,9 @@ Requests for the first three get an explicit error rather than silently doing no
 
 Message counts and rate limits reset on restart, because they are in memory.
 
+**Running behind Railway:** the right-most `X-Forwarded-For` entry there is a changing edge address, not the
+client, so set `-proxy-header X-Real-IP`. Railway overwrites that header, and a client-sent one was ignored in testing.
+
 **Not verified:** the official Android and iOS apps were never run against Herald, because no device or emulator
 was used. I read their source and every URL they call is implemented, but real delivery on a phone is untested.
 The upstream forward was tested against a fake upstream, not against ntfy.sh.
