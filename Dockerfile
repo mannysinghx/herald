@@ -10,7 +10,6 @@ RUN apk add --no-cache ca-certificates tzdata && adduser -D -u 10001 herald && m
 COPY --from=build /herald /usr/local/bin/herald
 USER herald
 ENV HERALD_DB=/data/herald.db
-VOLUME /data
 EXPOSE 8080
 ENTRYPOINT ["herald"]
 CMD ["serve"]
