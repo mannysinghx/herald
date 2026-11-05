@@ -24,6 +24,7 @@
 
 | Live on Railway | Through the public URL, 2026-11-05 | Token publish and poll, wrong token 401, other topic 403, anonymous 403; JSON and SSE arrive in about 200 ms, unbuffered; WebSocket; attachment round trip; scheduled send; messages and tokens survive a redeploy |
 | Live rate limit | 75 requests from one client | 62 allowed, 13 limited; spoofed `X-Forwarded-For` or `X-Real-IP` did not escape it; a client on another IP was unaffected |
+| Published repo | Fresh clone of `github.com/mannysinghx/herald`, 2026-11-05 | Tests pass, `go install` works, GitHub detects Apache-2.0, no secrets or personal IP in history by regex scan |
 | Page errors | Browser against a locked local copy, 14 cases | Bad topics, missing and wrong tokens, and tokens without permission all get a specific message; valid topic goes live and shows sent messages. Not re-run in a browser on the live URL; there the new page was confirmed served and the same responses checked with curl. |
 
 ## In flight
