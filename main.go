@@ -70,9 +70,12 @@ func serve(args []string) error {
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+	level := slog.LevelInfo
 	if *verbose {
-		slog.SetLogLoggerLevel(slog.LevelDebug)
+		level = slog.LevelDebug
 	}
+	// JSON on stdout: hosts treat stderr as errors, and read the level from the JSON
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})))
 	perm, err := store.ParsePermission(*access)
 	if err != nil {
 		return err

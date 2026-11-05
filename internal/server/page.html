@@ -23,7 +23,7 @@
 <body>
 <h1>Herald</h1>
 <form id="pick">
-  <input id="topic" placeholder="topic" aria-label="Topic" pattern="[-_A-Za-z0-9]{1,64}" required>
+  <input id="topic" placeholder="topic, like server-alerts" aria-label="Topic" required>
   <input id="token" placeholder="access token (optional)" aria-label="Access token" type="password" autocomplete="off">
   <button>Subscribe</button>
   <button type="button" class="quiet" id="notify">Enable alerts</button>
@@ -41,7 +41,30 @@ const headers = () => $("token").value ? { Authorization: "Bearer " + $("token")
 const authParam = () => $("token").value
   ? "&auth=" + btoa("Bearer " + $("token").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
   : "";
-let source, last = "", seen = new Set();
+let source, retry, last = "", seen = new Set();
+
+// Returns the topic if it is valid. Checked here rather than with the input's pattern attribute,
+// so the page can say what is wrong and suggest a name that works.
+function checkedTopic() {
+  const topic = $("topic").value.trim();
+  if (/^[-_A-Za-z0-9]{1,64}$/.test(topic)) return topic;
+  const suggestion = topic.replace(/[^-_A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 64);
+  $("status").textContent = "Topic names can only use letters, numbers, - and _, with no spaces."
+    + (suggestion ? " Try " + suggestion + "." : "");
+  $("topic").focus();
+  return null;
+}
+
+function accessProblem(status, topic, verb) {
+  if (status === 401) return "That access token is not valid.";
+  if (status === 403) {
+    return $("token").value
+      ? "This token is not allowed to " + verb + " " + topic + "."
+      : "This server needs an access token. Paste yours above, then try again.";
+  }
+  if (status === 429) return "Too many requests from this address. Wait a minute and try again.";
+  return "";
+}
 
 function show(m) {
   if (seen.has(m.id)) return;
@@ -61,11 +84,30 @@ function show(m) {
   }
 }
 
-function subscribe() {
-  const topic = $("topic").value;
-  if (source) source.close();
+function retryLater(message) {
+  $("status").textContent = message;
+  retry = setTimeout(subscribe, 3000);
+}
+
+async function subscribe() {
+  clearTimeout(retry);
+  if (source) { source.close(); source = null; }
+  const topic = checkedTopic();
+  if (!topic) return;
   history.replaceState(null, "", "/" + topic);
   $("status").textContent = "Connecting…";
+  // EventSource cannot report why it failed, so ask first. An access problem will not fix itself,
+  // so it stops here; only a server that cannot be reached is worth retrying.
+  let response;
+  try {
+    response = await fetch("/" + topic + "/auth", { headers: headers() });
+  } catch {
+    retryLater("Cannot reach the server. Retrying…");
+    return;
+  }
+  const problem = accessProblem(response.status, topic, "read");
+  if (problem) { $("status").textContent = problem; return; }
+  if (!response.ok) { retryLater("The server had a problem. Retrying…"); return; }
   // EventSource reconnects by itself but always to this URL, so "since" is refreshed by hand.
   source = new EventSource("/" + topic + "/sse?since=" + (last || "12h") + authParam());
   source.addEventListener("open", () => { $("status").textContent = "Live on " + topic; });
@@ -75,19 +117,31 @@ function subscribe() {
     if (m.event === "message") show(m);
   };
   source.onerror = () => {
-    $("status").textContent = "Disconnected. Check the topic and token. Retrying…";
     source.close();
-    setTimeout(subscribe, 3000);
+    source = null;
+    retryLater("Connection lost. Reconnecting…");
   };
 }
 
 $("pick").addEventListener("submit", (e) => { e.preventDefault(); last = ""; seen = new Set(); $("log").replaceChildren(); subscribe(); });
 $("send").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const response = await fetch("/" + $("topic").value, { method: "POST", headers: headers(), body: $("body").value });
-  if (response.ok) { $("body").value = ""; return; }
+  const topic = checkedTopic();
+  if (!topic) return;
+  let response;
+  try {
+    response = await fetch("/" + topic, { method: "POST", headers: headers(), body: $("body").value });
+  } catch {
+    $("status").textContent = "Cannot reach the server, so nothing was sent.";
+    return;
+  }
+  if (response.ok) {
+    $("body").value = "";
+    if (!source) $("status").textContent = "Sent to " + topic + ". Press Subscribe to see it here.";
+    return;
+  }
   const error = await response.json().catch(() => ({}));
-  $("status").textContent = "Send failed: " + (error.error || response.status);
+  $("status").textContent = accessProblem(response.status, topic, "send to") || "Send failed: " + (error.error || response.status);
 });
 $("notify").addEventListener("click", async () => {
   if (!window.Notification) { $("status").textContent = "This browser has no notifications."; return; }
