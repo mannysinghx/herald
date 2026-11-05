@@ -15,8 +15,9 @@
 | Real ntfy CLI against Herald | By hand, 2026-11-05 | Publish, delay, file, rejected anonymous, poll, live subscribe all worked |
 | Built-in page | Browser, 2026-11-05 | Live receive and send work; HTML in a message stays text |
 | Load | `tools/loadtest`, 2,000 subscriptions, 5,000 messages, one run on this Mac | 500,000 of 500,000 delivered |
+| Local CI (`scripts/ci-local.sh`, Linux container, clean checkout of `4276628`) | gofmt, vet, race tests, static build, govulncheck, conformance | Pass; no known vulnerabilities |
+| Docker image (`docker build`, 32.7 MB) | Ran it as non-root with a volume: publish, token add, restart | Message survived the restart |
 
-Local CI and the Docker image: see the change record in the latest commit message.
 
 ## In flight
 
