@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"herald/internal/model"
-	"herald/internal/store"
+	"github.com/mannysinghx/herald/internal/model"
+	"github.com/mannysinghx/herald/internal/store"
 )
 
 var (

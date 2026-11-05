@@ -4,7 +4,7 @@ package hub
 import (
 	"sync"
 
-	"herald/internal/model"
+	"github.com/mannysinghx/herald/internal/model"
 )
 
 // BufferSize is how many messages a subscription may lag behind before it is dropped.

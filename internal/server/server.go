@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"herald/internal/hub"
-	"herald/internal/model"
-	"herald/internal/store"
+	"github.com/mannysinghx/herald/internal/hub"
+	"github.com/mannysinghx/herald/internal/model"
+	"github.com/mannysinghx/herald/internal/store"
 )
 
 // Config is the server configuration. See DefaultConfig for the defaults.

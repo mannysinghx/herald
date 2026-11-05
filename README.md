@@ -12,17 +12,23 @@ Current state and next steps: [docs/PROGRESS.md](docs/PROGRESS.md).
 Needs Go 1.26.
 
 ```bash
-go build -o herald .
+go install github.com/mannysinghx/herald@latest
+```
+
+Or use Docker. Keep `/data` on a volume, or tokens and message history are lost with the container.
+
+```bash
+docker build -t herald . && docker run -p 8080:8080 -v herald-data:/data herald
 ```
 
 Access is denied by default, so create a token first. It is shown once; only its hash is stored.
 
 ```bash
-./herald token add -name laptop -allow 'alerts-*:rw,logs:ro'
+herald token add -name laptop -allow 'alerts-*:rw,logs:ro'
 ```
 
 ```bash
-./herald serve -listen :8080 -base-url https://notify.example.com -attachment-dir ./attachments
+herald serve -listen :8080 -base-url https://notify.example.com -attachment-dir ./attachments
 ```
 
 ## Use it
@@ -89,9 +95,21 @@ lost. The Docker image stores it in `/data`.
 
 ## Deploy to Railway
 
-Live at https://herald-production-ec87.up.railway.app. See [docs/PROGRESS.md](docs/PROGRESS.md) for the IDs, variables
-and commands. A new deployment needs a volume at `/data`, `RAILWAY_RUN_UID=0`, `HERALD_BEHIND_PROXY=true` and
-`HERALD_PROXY_HEADER=X-Real-IP`.
+Railway builds the included Dockerfile. Give the service a volume at `/data` and set these variables, plus
+`HERALD_BASE_URL` once it has a domain:
+
+| Variable | Value | Why |
+|---|---|---|
+| `RAILWAY_RUN_UID` | `0` | Railway volumes are owned by root, and the image runs as a regular user |
+| `HERALD_BEHIND_PROXY` | `true` | Rate limit clients rather than the proxy |
+| `HERALD_PROXY_HEADER` | `X-Real-IP` | On Railway, the last `X-Forwarded-For` entry is a changing edge address, not the client |
+| `HERALD_ATTACHMENT_DIR` | `/data/attachments` | Optional: enables attachments |
+
+Create a token from your terminal:
+
+```bash
+railway ssh --service herald -- herald token add -db /data/herald.db -name me -allow '*:rw'
+```
 
 ## Test it
 
@@ -110,3 +128,9 @@ To re-record the ntfy transcripts in `tools/conformance/golden`, build ntfy (see
 ```bash
 REF=/path/to/ntfy scripts/conformance.sh
 ```
+
+## License
+
+[Apache License 2.0](LICENSE). See [NOTICE](NOTICE). Herald is an independent implementation of the ntfy protocol,
+and is not affiliated with or endorsed by the [ntfy](https://github.com/binwiederhier/ntfy) project. If you want the
+full feature set, including push through Firebase, email and a complete web app, use ntfy itself.

@@ -12,8 +12,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"herald/internal/model"
-	"herald/internal/store"
+	"github.com/mannysinghx/herald/internal/model"
+	"github.com/mannysinghx/herald/internal/store"
 )
 
 const (

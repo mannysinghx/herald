@@ -22,8 +22,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"herald/internal/model"
-	"herald/internal/store"
+	"github.com/mannysinghx/herald/internal/model"
+	"github.com/mannysinghx/herald/internal/store"
 )
 
 // start runs a real server on a real socket, because the streaming behavior is the point.

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"herald/internal/model"
+	"github.com/mannysinghx/herald/internal/model"
 )
 
 // Permission is what a rule or the server default allows on a topic.

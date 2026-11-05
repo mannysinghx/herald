@@ -1,4 +1,4 @@
-module herald
+module github.com/mannysinghx/herald
 
 go 1.26.0
 

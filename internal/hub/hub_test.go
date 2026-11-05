@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"herald/internal/model"
+	"github.com/mannysinghx/herald/internal/model"
 )
 
 func TestSlowSubscriberIsDroppedAndPublisherNotBlocked(t *testing.T) {

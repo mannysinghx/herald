@@ -1,0 +1,12 @@
+Herald
+Copyright 2026 Maninder Singh
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+Herald is an independent implementation, written from scratch, of the wire
+protocol of ntfy (https://github.com/binwiederhier/ntfy), Copyright Philipp C.
+Heckel, which is dual-licensed under Apache-2.0 and GPL-2.0. Its protocol, error
+codes and default limits are mirrored for compatibility, and
+tools/conformance/golden records ntfy's observed responses for testing.
+
+Herald is not affiliated with or endorsed by the ntfy project.

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"herald/internal/model"
+	"github.com/mannysinghx/herald/internal/model"
 
 	_ "modernc.org/sqlite" // Pure Go driver, so the binary builds without cgo
 )

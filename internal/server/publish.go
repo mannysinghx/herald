@@ -23,7 +23,7 @@ import (
 
 	"github.com/gabriel-vasile/mimetype"
 
-	"herald/internal/model"
+	"github.com/mannysinghx/herald/internal/model"
 )
 
 const (

@@ -15,8 +15,8 @@ import (
 	"syscall"
 	"time"
 
-	"herald/internal/server"
-	"herald/internal/store"
+	"github.com/mannysinghx/herald/internal/server"
+	"github.com/mannysinghx/herald/internal/store"
 )
 
 func main() {

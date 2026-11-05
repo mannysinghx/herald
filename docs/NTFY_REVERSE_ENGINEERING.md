@@ -176,6 +176,6 @@ The upstream forward was tested against a fake upstream, not against ntfy.sh.
 
 ## Licensing note
 
-ntfy's license permits this kind of reuse. Herald has its own code but mirrors ntfy's protocol, error codes and
-default limits, and it was written with the source open. This is an engineering summary, not legal advice. Herald
-has no license file yet, and the name "Herald" is a placeholder chosen to avoid using the ntfy name.
+Herald is released under Apache-2.0. ntfy's license permits this kind of reuse. Herald has its own code but mirrors
+ntfy's protocol, error codes and default limits, and it was written with the source open, so `NOTICE` credits ntfy.
+This is an engineering summary, not legal advice.
