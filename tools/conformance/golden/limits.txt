@@ -1,0 +1,5 @@
+## request burst
+200: 60
+429: 10
+{"code":42901,"error":"limit reached: too many requests","http":429}
+has Retry-After: true

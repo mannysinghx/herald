@@ -1,0 +1,7 @@
+/herald
+*.db
+*.db-shm
+*.db-wal
+.local/
+.DS_Store
+._*

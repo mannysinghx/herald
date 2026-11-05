@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herald</title>
+<style>
+  :root { color-scheme: light dark; --line: #8884; --muted: #888; --accent: #2f6f9f; }
+  * { box-sizing: border-box; }
+  body { font: 15px/1.5 system-ui, sans-serif; margin: 0 auto; padding: 2rem 1rem; max-width: 42rem; }
+  h1 { font-size: 1.2rem; margin: 0 0 1rem; }
+  form { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
+  input { flex: 1 1 10rem; min-width: 0; padding: .5rem .6rem; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; }
+  button { padding: .5rem .9rem; font: inherit; border: 1px solid var(--accent); border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer; }
+  button.quiet { background: transparent; color: inherit; border-color: var(--line); }
+  #status { color: var(--muted); font-size: .85rem; margin: .25rem 0 1rem; min-height: 1.3em; }
+  article { border-top: 1px solid var(--line); padding: .75rem 0; }
+  article h2 { font-size: 1rem; margin: 0; }
+  article p { margin: .1rem 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  article small { color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>Herald</h1>
+<form id="pick">
+  <input id="topic" placeholder="topic" aria-label="Topic" pattern="[-_A-Za-z0-9]{1,64}" required>
+  <input id="token" placeholder="access token (optional)" aria-label="Access token" type="password" autocomplete="off">
+  <button>Subscribe</button>
+  <button type="button" class="quiet" id="notify">Enable alerts</button>
+</form>
+<form id="send">
+  <input id="body" placeholder="send a test message" aria-label="Message" required>
+  <button class="quiet">Send</button>
+</form>
+<div id="status" role="status"></div>
+<main id="log"></main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const headers = () => $("token").value ? { Authorization: "Bearer " + $("token").value } : {};
+const authParam = () => $("token").value
+  ? "&auth=" + btoa("Bearer " + $("token").value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
+  : "";
+let source, last = "", seen = new Set();
+
+function show(m) {
+  if (seen.has(m.id)) return;
+  seen.add(m.id);
+  const a = document.createElement("article");
+  if (m.title) { const h = document.createElement("h2"); h.textContent = m.title; a.append(h); }
+  const p = document.createElement("p");
+  p.textContent = m.message || "";
+  a.append(p);
+  const s = document.createElement("small");
+  const tags = (m.tags || []).join(", ");
+  s.textContent = new Date(m.time * 1000).toLocaleTimeString() + (m.priority ? " · priority " + m.priority : "") + (tags ? " · " + tags : "");
+  a.append(s);
+  $("log").prepend(a);
+  if (window.Notification && Notification.permission === "granted" && document.hidden) {
+    new Notification(m.title || m.topic, { body: m.message, tag: m.sequence_id || m.id });
+  }
+}
+
+function subscribe() {
+  const topic = $("topic").value;
+  if (source) source.close();
+  history.replaceState(null, "", "/" + topic);
+  $("status").textContent = "Connecting…";
+  // EventSource reconnects by itself but always to this URL, so "since" is refreshed by hand.
+  source = new EventSource("/" + topic + "/sse?since=" + (last || "12h") + authParam());
+  source.addEventListener("open", () => { $("status").textContent = "Live on " + topic; });
+  source.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    last = m.id;
+    if (m.event === "message") show(m);
+  };
+  source.onerror = () => {
+    $("status").textContent = "Disconnected. Check the topic and token. Retrying…";
+    source.close();
+    setTimeout(subscribe, 3000);
+  };
+}
+
+$("pick").addEventListener("submit", (e) => { e.preventDefault(); last = ""; seen = new Set(); $("log").replaceChildren(); subscribe(); });
+$("send").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const response = await fetch("/" + $("topic").value, { method: "POST", headers: headers(), body: $("body").value });
+  if (response.ok) { $("body").value = ""; return; }
+  const error = await response.json().catch(() => ({}));
+  $("status").textContent = "Send failed: " + (error.error || response.status);
+});
+$("notify").addEventListener("click", async () => {
+  if (!window.Notification) { $("status").textContent = "This browser has no notifications."; return; }
+  $("status").textContent = "Alerts: " + await Notification.requestPermission() + " (shown while this tab is open)";
+});
+const fromPath = location.pathname.slice(1);
+if (fromPath) { $("topic").value = fromPath; subscribe(); }
+</script>
+</body>
+</html>

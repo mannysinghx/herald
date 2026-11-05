@@ -1,0 +1,646 @@
+## publish plain
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID1","message":"hello world","time":"T","topic":"t1"}
+## publish trims whitespace
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID2","message":"padded","time":"T","topic":"t1"}
+## publish PUT
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID3","message":"via put","time":"T","topic":"t1"}
+## publish empty body
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID4","message":"triggered","time":"T","topic":"t1"}
+## publish all headers
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"click":"https://example.com/c","event":"message","expires":"T+43200","icon":"https://example.com/i.png","id":"ID5","message":"b","priority":5,"tags":["warning","skull"],"time":"T","title":"A title","topic":"t1"}
+## publish X- headers
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID6","message":"b","priority":4,"tags":["x"],"time":"T","title":"XT","topic":"t1"}
+## publish short aliases
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID7","message":"b","priority":1,"tags":["s"],"time":"T","title":"short","topic":"t1"}
+## publish query params
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID8","message":"qm","priority":5,"tags":["a","b"],"time":"T","title":"qt","topic":"t1"}
+## publish header message newline
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID9","message":"line1\nline2","time":"T","topic":"t1"}
+## publish encoded title
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID10","message":"b","time":"T","title":"😀 hi","topic":"t1"}
+## publish RFC 9218 priority ignored
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID11","message":"b","time":"T","topic":"t1"}
+## publish markdown
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"content_type":"text/markdown","event":"message","expires":"T+43200","id":"ID12","message":"**b**","time":"T","topic":"t1"}
+## publish markdown content type
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"content_type":"text/markdown","event":"message","expires":"T+43200","id":"ID13","message":"**b**","time":"T","topic":"t1"}
+## publish via GET publish
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID14","message":"g1","time":"T","title":"gt","topic":"t1"}
+## publish via GET send
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID15","message":"g2","time":"T","topic":"t1"}
+## publish via GET trigger
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID16","message":"triggered","time":"T","topic":"t1"}
+## publish JSON
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"click":"https://example.com/j","event":"message","expires":"T+43200","id":"ID17","message":"jm","priority":2,"tags":["a","b"],"time":"T","title":"jt","topic":"t1"}
+## publish JSON minimal
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID18","message":"triggered","time":"T","topic":"t1"}
+## publish JSON actions
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"view","clear":false,"id":"ACTION","label":"Open","url":"https://example.com"}],"event":"message","expires":"T+43200","id":"ID19","message":"ja","time":"T","topic":"t1"}
+## publish JSON invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40024,"error":"invalid request: request body must be valid JSON","http":400}
+## publish JSON bad topic
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40009,"error":"invalid request: topic invalid","http":400}
+## invalid priority
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40007,"error":"invalid priority parameter","http":400}
+## title too long
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40057,"error":"invalid request: title is too large","http":400}
+## tags too long
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40058,"error":"invalid request: tags are too large","http":400}
+## icon invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40021,"error":"invalid request: icon URL is invalid","http":400}
+## attach invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40013,"error":"invalid request: attachment URL is invalid","http":400}
+## email disabled
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40001,"error":"e-mail notifications are not enabled","http":400}
+## call disabled
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40032,"error":"invalid request: calling is disabled","http":400}
+## topic disallowed
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40010,"error":"invalid request: topic name is not allowed","http":400}
+## topic disallowed docs
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40010,"error":"invalid request: topic name is not allowed","http":400}
+## topic too long
+status: 404
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40401,"error":"page not found","http":404}
+## unknown path
+status: 404
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40401,"error":"page not found","http":404}
+## unknown method path
+status: 404
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40401,"error":"page not found","http":404}
+## actions simple view
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"view","clear":true,"id":"ACTION","label":"Open","url":"https://example.com/a?x=1"}],"event":"message","expires":"T+43200","id":"ID20","message":"b","time":"T","topic":"t2"}
+## actions simple multiple
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"view","clear":false,"id":"ACTION","label":"A","url":"https://example.com"},{"action":"http","body":"hi","clear":false,"headers":{"X-Y":"z"},"id":"ACTION","label":"B","method":"PUT","url":"https://example.com/b"},{"action":"copy","clear":false,"id":"ACTION","label":"C","value":"val"}],"event":"message","expires":"T+43200","id":"ID21","message":"b","time":"T","topic":"t2"}
+## actions keyed
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"view","clear":false,"id":"ACTION","label":"Open","url":"https://example.com"}],"event":"message","expires":"T+43200","id":"ID22","message":"b","time":"T","topic":"t2"}
+## actions quoted
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"view","clear":false,"id":"ACTION","label":"Look, a comma","url":"https://example.com"}],"event":"message","expires":"T+43200","id":"ID23","message":"b","time":"T","topic":"t2"}
+## actions broadcast
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"broadcast","clear":false,"extras":{"cmd":"pic"},"id":"ACTION","intent":"io.x.Y","label":"Go"}],"event":"message","expires":"T+43200","id":"ID24","message":"b","time":"T","topic":"t2"}
+## actions JSON header
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"actions":[{"action":"copy","clear":false,"id":"ACTION","label":"C","value":"v"}],"event":"message","expires":"T+43200","id":"ID25","message":"b","time":"T","topic":"t2"}
+## actions too many
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40018,"error":"invalid request: actions invalid; only 3 actions allowed","http":400}
+## actions unknown
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40018,"error":"invalid request: actions invalid; term 'https://x.io' unknown","http":400}
+## actions missing url
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40018,"error":"invalid request: actions invalid; parameter 'url' is required for action 'view'","http":400}
+## sequence via path
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID26","message":"v1","sequence_id":"seq1","time":"T","topic":"t3"}
+## sequence via path again
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID27","message":"v2","sequence_id":"seq1","time":"T","topic":"t3"}
+## sequence via header
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID28","message":"v3","sequence_id":"seq2","time":"T","topic":"t3"}
+## sequence invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40049,"error":"invalid request: sequence ID invalid","http":400}
+## clear via PUT
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message_clear","expires":"T+43200","id":"ID29","sequence_id":"seq1","time":"T","topic":"t3"}
+## read via GET
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message_clear","expires":"T+43200","id":"ID30","sequence_id":"seq1","time":"T","topic":"t3"}
+## delete via DELETE
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message_delete","expires":"T+43200","id":"ID31","sequence_id":"seq1","time":"T","topic":"t3"}
+## delete via GET
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message_delete","expires":"T+43200","id":"ID32","sequence_id":"seq2","time":"T","topic":"t3"}
+## poll sees the events
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID26","message":"v1","sequence_id":"seq1","time":"T","topic":"t3"}
+{"event":"message","expires":"T+43200","id":"ID27","message":"v2","sequence_id":"seq1","time":"T","topic":"t3"}
+{"event":"message","expires":"T+43200","id":"ID28","message":"v3","sequence_id":"seq2","time":"T","topic":"t3"}
+{"event":"message_clear","expires":"T+43200","id":"ID29","sequence_id":"seq1","time":"T","topic":"t3"}
+{"event":"message_clear","expires":"T+43200","id":"ID30","sequence_id":"seq1","time":"T","topic":"t3"}
+{"event":"message_delete","expires":"T+43200","id":"ID31","sequence_id":"seq1","time":"T","topic":"t3"}
+{"event":"message_delete","expires":"T+43200","id":"ID32","sequence_id":"seq2","time":"T","topic":"t3"}
+## poll json
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"click":"https://example.com/c","event":"message","expires":"T+43200","icon":"https://example.com/i.png","id":"ID5","message":"b","priority":5,"tags":["warning","skull"],"time":"T","title":"A title","topic":"t1"}
+{"event":"message","expires":"T+43200","id":"ID8","message":"qm","priority":5,"tags":["a","b"],"time":"T","title":"qt","topic":"t1"}
+## poll sse
+status: 200
+Content-Type: text/event-stream; charset=utf-8
+Access-Control-Allow-Origin: *
+data: {"click":"https://example.com/j","event":"message","expires":"T+43200","id":"ID17","message":"jm","priority":2,"tags":["a","b"],"time":"T","title":"jt","topic":"t1"}
+## poll raw
+status: 200
+Content-Type: text/plain; charset=utf-8
+Access-Control-Allow-Origin: *
+b
+## poll raw flattens newlines
+status: 200
+Content-Type: text/plain; charset=utf-8
+Access-Control-Allow-Origin: *
+line1 line2
+## filter default priority
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## filter priority 3 matches unset
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID33","message":"pri-none","time":"T","topic":"t4"}
+{"event":"message","expires":"T+43200","id":"ID34","message":"pri-3","priority":3,"time":"T","topic":"t4"}
+## filter priorities
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID33","message":"pri-none","time":"T","topic":"t4"}
+{"event":"message","expires":"T+43200","id":"ID34","message":"pri-3","priority":3,"time":"T","topic":"t4"}
+{"event":"message","expires":"T+43200","id":"ID35","message":"pri-4","priority":4,"tags":["a","b"],"time":"T","topic":"t4"}
+## filter priority invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40007,"error":"invalid priority parameter","http":400}
+## filter all tags needed
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## filter tags
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID35","message":"pri-4","priority":4,"tags":["a","b"],"time":"T","topic":"t4"}
+## filter via header
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID34","message":"pri-3","priority":3,"time":"T","topic":"t4"}
+## filter id
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID34","message":"pri-3","priority":3,"time":"T","topic":"t4"}
+## since all
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID36","message":"s1","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID37","message":"s2","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since none
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## since latest
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since first id
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID37","message":"s2","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since second id
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since unknown id
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID36","message":"s1","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID37","message":"s2","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since far future time
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## since long duration
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID36","message":"s1","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID37","message":"s2","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## since invalid
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40008,"error":"invalid since parameter","http":400}
+## since via header
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+## multiple topics
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID38","message":"s3","time":"T","topic":"t5"}
+{"event":"message","expires":"T+43200","id":"ID39","message":"other","time":"T","topic":"t6"}
+## duplicate topics
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID39","message":"other","time":"T","topic":"t6"}
+## no cache publish
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","id":"ID40","message":"gone","time":"T","topic":"t7"}
+## no cache is not replayed
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## stream json
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+{"event":"open","id":"ID42","time":"T","topic":"s1"}
+{"event":"message","expires":"T+43200","id":"ID41","message":"live","time":"T","title":"lt","topic":"s1"}
+## stream sse
+status: 200
+Content-Type: text/event-stream; charset=utf-8
+event: open
+data: {"event":"open","id":"ID44","time":"T","topic":"s2"}
+
+data: {"event":"message","expires":"T+43200","id":"ID43","message":"live","time":"T","topic":"s2"}
+
+## stream raw
+status: 200
+Content-Type: text/plain; charset=utf-8
+
+live newline
+## stream multiple topics
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+{"event":"open","id":"ID49","time":"T","topic":"s4,s5"}
+{"event":"message","expires":"T+43200","id":"ID46","message":"to s4","time":"T","topic":"s4"}
+{"event":"message","expires":"T+43200","id":"ID47","message":"to s5","time":"T","topic":"s5"}
+## stream filter
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+{"event":"open","id":"ID52","time":"T","topic":"s7"}
+{"event":"message","expires":"T+43200","id":"ID51","message":"kept","tags":["keep"],"time":"T","topic":"s7"}
+## stream with since replays first
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+{"event":"open","id":"ID55","time":"T","topic":"s8"}
+{"event":"message","expires":"T+43200","id":"ID53","message":"before","time":"T","topic":"s8"}
+{"event":"message","expires":"T+43200","id":"ID54","message":"after","time":"T","topic":"s8"}
+## stream poll ends
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+{"event":"message","expires":"T+43200","id":"ID53","message":"before","time":"T","topic":"s8"}
+{"event":"message","expires":"T+43200","id":"ID54","message":"after","time":"T","topic":"s8"}
+## websocket live
+{"event":"open","id":"ID57","time":"T","topic":"w1"}
+{"event":"message","expires":"T+43200","id":"ID56","message":"live","sequence_id":"ID56","time":"T","title":"wt","topic":"w1"}
+(end)
+## websocket since all
+{"event":"open","id":"ID60","time":"T","topic":"w2"}
+{"event":"message","expires":"T+43200","id":"ID58","message":"old","sequence_id":"ID58","time":"T","topic":"w2"}
+{"event":"message","expires":"T+43200","id":"ID59","message":"new","sequence_id":"ID59","time":"T","topic":"w2"}
+(end)
+## websocket poll
+{"event":"message","expires":"T+43200","id":"ID58","message":"old","sequence_id":"ID58","time":"T","topic":"w2"}
+{"event":"message","expires":"T+43200","id":"ID59","message":"new","sequence_id":"ID59","time":"T","topic":"w2"}
+(end)
+## websocket filter
+{"event":"open","id":"ID63","time":"T","topic":"w3"}
+{"event":"message","expires":"T+43200","id":"ID62","message":"yes","priority":5,"sequence_id":"ID62","time":"T","topic":"w3"}
+(end)
+## websocket without upgrade
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40016,"error":"invalid request: client not using the websocket protocol","http":400}
+## websocket forbidden topic
+dial failed, status: 400
+## attachment by filename
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"expires":"T+10800","name":"note.txt","size":10,"type":"text/plain; charset=utf-8","url":"BASE/file/ID64.txt"},"event":"message","expires":"T+43200","id":"ID64","message":"You received a file: note.txt","time":"T","topic":"a1"}
+## download by filename
+status: 200 bytes: 10
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="note.txt"
+head: 200 10
+## attachment binary body
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"expires":"T+10800","name":"attachment.txt","size":400,"type":"text/plain; charset=utf-16le","url":"BASE/file/ID65.txt"},"event":"message","expires":"T+43200","id":"ID65","message":"You received a file: attachment.txt","time":"T","topic":"a1"}
+## download binary
+status: 200 bytes: 400
+Content-Type: text/plain; charset=utf-16le
+Content-Disposition: attachment; filename="attachment.txt"
+head: 200 400
+## attachment oversized text
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"expires":"T+10800","name":"attachment.txt","size":4097,"type":"text/plain; charset=utf-8","url":"BASE/file/ID66.txt"},"event":"message","expires":"T+43200","id":"ID66","message":"You received a file: attachment.txt","time":"T","topic":"a1"}
+## download oversized
+status: 200 bytes: 4097
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="attachment.txt"
+head: 200 4097
+## message at size limit
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"expires":"T+10800","name":"attachment.txt","size":4096,"type":"text/plain; charset=utf-8","url":"BASE/file/ID67.txt"},"event":"message","expires":"T+43200","id":"ID67","message":"You received a file: attachment.txt","time":"T","topic":"a1"}
+## attachment html
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"expires":"T+10800","name":"x.html","size":31,"type":"text/html; charset=utf-8","url":"BASE/file/ID68.html"},"event":"message","expires":"T+43200","id":"ID68","message":"You received a file: x.html","time":"T","topic":"a1"}
+## download html is not served as html
+status: 200 bytes: 31
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="x.html"
+head: 200 31
+## attachment external
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"name":"pic.png","url":"https://example.com/pic.png"},"event":"message","expires":"T+43200","id":"ID69","message":"see this","time":"T","topic":"a1"}
+## attachment external named
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"name":"other.png","url":"https://example.com/pic.png"},"event":"message","expires":"T+43200","id":"ID70","message":"You received a file: other.png","time":"T","topic":"a1"}
+## attachment external no name
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"attachment":{"name":"attachment","url":"https://example.com/"},"event":"message","expires":"T+43200","id":"ID71","message":"You received a file: attachment","time":"T","topic":"a1"}
+## unknown file
+status: 404
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40401,"error":"page not found","http":404}
+## attachment too large
+status: 413
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":41301,"error":"attachment too large, or bandwidth limit reached","http":413}
+## poll attachments
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## delay too small
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40005,"error":"invalid delay parameter: too small, please refer to the docs","http":400}
+## delay too large
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40006,"error":"invalid delay parameter: too large, please refer to the docs","http":400}
+## delay unparseable
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40004,"error":"invalid delay parameter: unable to parse delay","http":400}
+## delay without cache
+status: 400
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40002,"error":"cannot disable cache for delayed message","http":400}
+## delay duration
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID72","message":"later","time":"T","topic":"d1"}
+## delay duration words
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID73","message":"pending","time":"T","topic":"d2"}
+## delay is hidden from poll
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## delay shows with scheduled
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID72","message":"later","time":"T","topic":"d1"}
+## delay replaced by sequence
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID74","message":"replaced","sequence_id":"sq","time":"T","topic":"d2"}
+## delay replaced again
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID75","message":"replaced twice","sequence_id":"sq","time":"T","topic":"d2"}
+## delay shows replacement once
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID73","message":"pending","time":"T","topic":"d2"}
+{"event":"message","expires":"T+43200","id":"ID75","message":"replaced twice","sequence_id":"sq","time":"T","topic":"d2"}
+## delete drops pending
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message_delete","expires":"T+43200","id":"ID76","sequence_id":"sq","time":"T","topic":"d2"}
+## pending is gone
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## delay was delivered
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID72","message":"later","time":"T","topic":"d1"}
+## options
+status: 200
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, PUT, POST, PATCH, DELETE
+Access-Control-Allow-Headers: *
+## health
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"healthy":true,"role":"active"}
+## topic auth
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"success":true}
+## unifiedpush discovery
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"unifiedpush":{"version":1}}
+## unifiedpush binary
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"encoding":"base64","event":"message","expires":"T+43200","id":"ID77","message":"//4=","time":"T","topic":"up"}
+## unifiedpush text keeps space
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID78","message":" keep ","time":"T","topic":"up"}
+## poll request
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"poll_request","id":"ID79","message":"New message","poll_id":"abc123","time":"T","topic":"p1"}
+## poll request not stored
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## head root
+status: 200

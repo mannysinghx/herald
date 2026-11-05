@@ -1,0 +1,100 @@
+## anonymous publish
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## anonymous read
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## anonymous auth probe
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## anonymous health still works
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"healthy":true,"role":"active"}
+## bearer publish
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID1","message":"secret","time":"T","topic":"alerts1"}
+## bearer read
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID1","message":"secret","time":"T","topic":"alerts1"}
+## bearer auth probe
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"success":true}
+## bearer on other topic
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## bearer read other topic
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## bearer multi topic with forbidden
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## wrong bearer
+status: 401
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40101,"error":"unauthorized","http":401}
+## wrong bearer on public path
+status: 401
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40101,"error":"unauthorized","http":401}
+## basic with empty user
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID1","message":"secret","time":"T","topic":"alerts1"}
+## auth query param
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID1","message":"secret","time":"T","topic":"alerts1"}
+## other auth scheme ignored
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## read-only can read
+status: 200
+Content-Type: application/x-ndjson; charset=utf-8
+Access-Control-Allow-Origin: *
+## read-only cannot write
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## write-only can write
+status: 200
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"event":"message","expires":"T+43200","id":"ID2","message":"b","time":"T","topic":"writeonly1"}
+## write-only cannot read
+status: 403
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+{"code":40301,"error":"forbidden","http":403}
+## websocket with query auth
+{"event":"open","id":"ID3","time":"T","topic":"alerts1"}
+{"event":"message","expires":"T+43200","id":"ID1","message":"secret","sequence_id":"ID1","time":"T","topic":"alerts1"}
+(end)
+## websocket without auth
+dial failed, status: 403
